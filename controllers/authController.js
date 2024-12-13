@@ -16,13 +16,13 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, passkey } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required' });
+        if (!email || !password || !passkey) {
+            return res.status(400).json({ message: 'Email, password and passkey are required' });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email, passkey });
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
         const isMatch = await user.validatePassword(password);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ message: 'Invalid credentials : password' });
         }
 
         const token = jwt.sign(
